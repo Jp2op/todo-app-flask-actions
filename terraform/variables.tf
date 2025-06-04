@@ -7,3 +7,9 @@ variable "datadog_api_key" {
   type      = string
   sensitive = true
 }
+
+variable "bugsnag_api_key" {
+  description = "Bugsnag API key"
+  type        = string
+  sensitive   = true
+}
