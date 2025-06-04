@@ -1,4 +1,4 @@
 Flask==2.2.5
 gunicorn==20.1.0
-bugsnag==3.13.0
+bugsnag==4.7.1
 ddtrace==1.21.4
