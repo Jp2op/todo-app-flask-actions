@@ -1,0 +1,28 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+form input[type="text"] {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.list-group-item {
+    transition: background-color 0.3s ease-in-out;
+}
+
+.list-group-item-success {
+    background-color: #d4edda !important;
+    color: #155724;
+}
+
+.btn {
+    margin-left: 0.25rem;
+}
