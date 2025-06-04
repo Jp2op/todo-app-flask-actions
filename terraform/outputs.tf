@@ -1,3 +1,8 @@
+output "debug_api_key" {
+  value     = var.datadog_api_key
+  sensitive = true
+}
+
 output "cluster_name" {
   value = module.eks.cluster_name
 }

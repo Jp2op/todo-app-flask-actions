@@ -46,6 +46,17 @@ jobs:
       working-directory: terraform
       run: terraform apply -auto-approve
 
+    - name: Terraform Apply
+      working-directory: terraform
+      env:
+        DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        BUGSNAG_API_KEY: ${{ secrets.BUGSNAG_API_KEY }}
+      run: |
+        terraform apply -auto-approve \
+        -var="datadog_api_key=$DATADOG_API_KEY" \
+        -var="bugsnag_api_key=$BUGSNAG_API_KEY"
+  
+
     - name: Update kubeconfig
       run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
