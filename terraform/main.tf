@@ -2,12 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
