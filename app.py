@@ -1,38 +1,47 @@
-from flask import Flask, render_template, request, redirect, url_for
+import os
+import bugsnag
+from bugsnag.flask import handle_exceptions
+
+from flask import Flask, render_template, request, redirect
+
+# Datadog tracing setup
+from ddtrace import patch_all, tracer
+patch_all()
 
 app = Flask(__name__)
 
-# In-memory task list
-tasks = []
+# --- Bugsnag setup ---
+bugsnag.configure(
+    api_key=os.environ.get("BUGSNAG_API_KEY", ""),  # fallback to empty string
+    project_root=os.path.dirname(os.path.realpath(__file__)),
+    notify_release_stages=["production", "development"],
+    release_stage=os.environ.get("FLASK_ENV", "development")
+)
+handle_exceptions(app)
+
+# Sample in-memory todo list
+todos = []
 
 @app.route('/')
 def index():
-    return render_template('index.html', tasks=tasks)
+    return render_template('index.html', todos=todos)
 
 @app.route('/add', methods=['POST'])
 def add():
-    task_content = request.form.get('task')
-    if task_content:
-        task = {
-            'id': len(tasks) + 1,
-            'task': task_content,
-            'done': False
-        }
-        tasks.append(task)
-    return redirect(url_for('index'))
+    todo = request.form.get('todo')
+    if todo:
+        todos.append(todo)
+    return redirect('/')
 
-@app.route('/complete/<int:task_id>')
-def complete(task_id):
-    for task in tasks:
-        if task['id'] == task_id:
-            task['done'] = True
-    return redirect(url_for('index'))
+@app.route('/error')
+def trigger_error():
+    # Manually trigger an exception for Bugsnag testing
+    raise Exception("Test error for Bugsnag")
 
-@app.route('/delete/<int:task_id>')
-def delete(task_id):
-    global tasks
-    tasks = [task for task in tasks if task['id'] != task_id]
-    return redirect(url_for('index'))
+@app.route('/datadog')
+def test_datadog_trace():
+    with tracer.trace("custom.test_datadog_trace", service="flask-todo-app"):
+        return "Datadog trace captured."
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)
