@@ -1,25 +1,24 @@
 import os
 import bugsnag
 from bugsnag.flask import handle_exceptions
-
 from flask import Flask, render_template, request, redirect
-
-# Datadog tracing setup
 from ddtrace import patch_all, tracer
+
+# Enable automatic instrumentation
 patch_all()
 
 app = Flask(__name__)
 
 # --- Bugsnag setup ---
 bugsnag.configure(
-    api_key=os.environ.get("BUGSNAG_API_KEY", ""),  # fallback to empty string
+    api_key=os.environ.get("BUGSNAG_API_KEY", ""),
     project_root=os.path.dirname(os.path.realpath(__file__)),
     notify_release_stages=["production", "development"],
     release_stage=os.environ.get("FLASK_ENV", "development")
 )
 handle_exceptions(app)
 
-# Sample in-memory todo list
+# In-memory todo list
 todos = []
 
 @app.route('/')
@@ -35,10 +34,17 @@ def add():
 
 @app.route('/error')
 def trigger_error():
-    # Manually trigger an exception for Bugsnag testing
     raise Exception("Test error for Bugsnag")
 
 @app.route('/datadog')
 def test_datadog_trace():
     with tracer.trace("custom.test_datadog_trace", service="flask-todo-app"):
         return "Datadog trace captured."
+
+@app.route('/health')
+def health():
+    return "OK", 200
+
+# Optional: useful for local dev (but Gunicorn is used in container)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=80)
