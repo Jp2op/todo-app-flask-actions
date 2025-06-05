@@ -10,8 +10,6 @@ jobs:
     env:
       TF_VAR_region: us-east-1       # adjust if needed
       AWS_REGION: us-east-1
-      # Add your Bugsnag API key here, preferably from secrets
-      TF_VAR_bugsnag_api_key: ${{ secrets.BUGSNAG_API_KEY }}
 
     steps:
       - name: Checkout Repository
