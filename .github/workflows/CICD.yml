@@ -79,6 +79,10 @@ jobs:
           kubectl apply -f k8s/deployment.yml
           kubectl apply -f k8s/service.yml
 
+      - name: Wait for deployment rollout to complete
+        run: |
+          kubectl rollout status deployment/flask-todo-app --timeout=90s
+    
       - name: Check Deployment status
         run: kubectl get deployment flask-todo-app -o wide
     
