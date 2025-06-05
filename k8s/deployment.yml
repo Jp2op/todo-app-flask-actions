@@ -21,10 +21,7 @@ spec:
             - containerPort: 5000
           env:
             - name: BUGSNAG_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: bugsnag-secret
-                  key: BUGSNAG_API_KEY
+              value: ""  # Overwritten during CI/CD
             - name: FLASK_ENV
               value: "production"
 
