@@ -2,6 +2,19 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Add this provider "helm" block:
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    }
+  }
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
@@ -19,7 +32,7 @@ module "vpc" {
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version         = "20.8.4"
+  version         = "20.8.4" # Using EKS module version 20.8.4
   cluster_name    = "flask-todo-cluster"
   cluster_version = "1.29"
 
@@ -42,14 +55,14 @@ resource "helm_release" "datadog" {
   name       = "datadog"
   repository = "https://helm.datadoghq.com"
   chart      = "datadog"
-  version    = "3.53.1"
+  version    = "3.53.1" # Specifying Datadog chart version
 
-  namespace = "datadog"
+  namespace        = "datadog"
   create_namespace = true
 
   set {
     name  = "datadog.apiKey"
-    value = var.datadog_api_key
+    value = var.datadog_api_key # Make sure var.datadog_api_key is defined and passed
   }
 
   set {
@@ -73,7 +86,7 @@ resource "helm_release" "datadog" {
   }
 
   set {
-    name  = "agents.containerLogs.enabled"
+    name  = "agents.containerLogs.enabled" # This is for the Datadog agent configuration
     value = "true"
   }
 
@@ -82,5 +95,13 @@ resource "helm_release" "datadog" {
     value = "production"
   }
 
-  depends_on = [module.eks]
+  depends_on = [module.eks] # This is good, ensures EKS is ready
 }
+
+# You should also have a variables.tf file (or define variables here) for var.datadog_api_key
+# Example:
+# variable "datadog_api_key" {
+#   description = "Datadog API Key"
+#   type        = string
+#   sensitive   = true # Recommended for API keys
+# }

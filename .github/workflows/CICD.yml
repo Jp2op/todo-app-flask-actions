@@ -26,7 +26,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: jayyp2op/flask-todo-app:latest
+          tags: jayyp2op/flask-todo-app:latest # Ensure this image tag is used in your k8s/deployment.yaml
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
@@ -46,48 +46,50 @@ jobs:
         working-directory: terraform
         env:
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-          DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }} # Note: DATADOG_APP_KEY is in env but not used in -var, check if your TF needs it
+          DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }} # Check if your Terraform uses this directly
           BUGSNAG_API_KEY: ${{ secrets.BUGSNAG_API_KEY }}
         run: |
+          # Ensure your Terraform code (main.tf/providers.tf) has the helm provider
+          # correctly configured to connect to EKS, as per the previous explanation.
           terraform apply -auto-approve \
             -var="datadog_api_key=$DATADOG_API_KEY" \
-            -var="bugsnag_api_key=$BUGSNAG_API_KEY"
+            -var="bugsnag_api_key=$BUGSNAG_API_KEY" # Add other vars if needed by TF
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'latest' # You might want to pin this to a specific version
+          version: 'latest' # Consider pinning to a specific version
 
       - name: Update kubeconfig for EKS
         run: aws eks update-kubeconfig --name flask-todo-cluster --region ${{ secrets.AWS_REGION }}
 
-      - name: Install Helm
+      - name: Install Helm # This step is still useful if you have other Helm charts deployed via CLI
         uses: azure/setup-helm@v3
         with:
-          version: 'latest' # You might want to pin this to a specific version
+          version: 'latest' # Consider pinning to a specific version
 
-      - name: Deploy to EKS
+      - name: Deploy to EKS (Application Manifests)
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
 
-      - name: Install Datadog via Helm
-        run: |
-          helm repo add datadog https://helm.datadoghq.com
-          helm repo update
-          helm upgrade --install datadog datadog/datadog \
-            --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
-            --set datadog.site='datadoghq.com' \
-            --set datadog.logs.enabled=true \
-            --set datadog.apm.enabled=true \
-            --set datadog.processAgent.enabled=true \
-            --set agents.containerLogs.enabled=true \
-            --set datadog.env=production \
-            --set targetSystem=linux \
-            --namespace datadog \
-            --create-namespace
+      # - name: Install Datadog via Helm # COMMENTED OUT / REMOVE IF DATADOG IS MANAGED BY TERRAFORM HELM_RELEASE
+      #   run: |
+      #     helm repo add datadog https://helm.datadoghq.com
+      #     helm repo update
+      #     helm upgrade --install datadog datadog/datadog \
+      #       --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
+      #       --set datadog.site='datadoghq.com' \
+      #       --set datadog.logs.enabled=true \
+      #       --set datadog.apm.enabled=true \
+      #       --set datadog.processAgent.enabled=true \
+      #       --set agents.containerLogs.enabled=true \
+      #       --set datadog.env=production \
+      #       --set targetSystem=linux \
+      #       --namespace datadog \
+      #       --create-namespace
 
-      - name: Inject Environment Variables
+      - name: Inject Environment Variables into flask-todo-app Deployment
         run: |
           kubectl set env deployment/flask-todo-app \
             DATADOG_API_KEY=${{ secrets.DATADOG_API_KEY }} \
