@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: flask-todo-service
   labels:
-    app: flask-todo
+    app: flask-todo-app
 spec:
   type: LoadBalancer
   selector:
