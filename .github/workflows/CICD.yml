@@ -35,6 +35,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Update kubeconfig for EKS
+        run: aws eks update-kubeconfig --name flask-todo-cluster --region ${{ secrets.AWS_REGION }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -52,19 +65,6 @@ jobs:
           terraform apply -auto-approve \
             -var="datadog_api_key=$DATADOG_API_KEY" \
             -var="bugsnag_api_key=$BUGSNAG_API_KEY"
-
-      - name: Update kubeconfig
-        run: aws eks update-kubeconfig --name flask-todo-cluster --region ${{ secrets.AWS_REGION }}
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: 'latest'
 
       - name: Deploy to EKS
         run: |
