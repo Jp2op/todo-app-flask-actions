@@ -18,7 +18,7 @@ spec:
         - name: flask-todo-container
           image: jayyp2op/flask-todo-app:latest
           ports:
-            - containerPort: 5000
+            - containerPort: 80
           env:
             - name: BUGSNAG_API_KEY
               value: ""  # Overwritten during CI/CD
