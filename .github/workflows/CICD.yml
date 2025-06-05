@@ -94,3 +94,17 @@ jobs:
           kubectl set env deployment/flask-todo-app \
             DATADOG_API_KEY=${{ secrets.DATADOG_API_KEY }} \
             BUGSNAG_API_KEY=${{ secrets.BUGSNAG_API_KEY }}
+      
+      - name: Wait for LoadBalancer external IP
+        run: |
+          echo "Waiting for external IP..."
+          for i in {1..30}; do
+            EXTERNAL_IP=$(kubectl get svc flask-todo-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            if [[ -n "$EXTERNAL_IP" ]]; then
+              echo "✅ External IP: $EXTERNAL_IP"
+              echo "Visit: http://$EXTERNAL_IP"
+              break
+            fi
+            echo "Still waiting... ($i/30)"
+            sleep 10
+          done
