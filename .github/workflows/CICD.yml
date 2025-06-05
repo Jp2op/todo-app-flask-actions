@@ -68,10 +68,10 @@ jobs:
         with:
           version: 'latest' # Consider pinning to a specific version
 
-      - name: Deploy to EKS (Application Manifests)
-        run: |
-          kubectl apply -f k8s/deployment.yml
-          kubectl apply -f k8s/service.yml
+      #- name: Deploy to EKS (Application Manifests)
+       # run: |
+        #  kubectl apply -f k8s/deployment.yml
+         # kubectl apply -f k8s/service.yml
 
       - name: Check Deployment status
         run: kubectl get deployment flask-todo-app -o wide
