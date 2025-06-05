@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"  # Replace with your region if different
+  region = "us-east-1"  # Replace with your desired AWS region
 }
 
 module "vpc" {
@@ -48,17 +48,7 @@ module "eks" {
     }
   }
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-
-module "eks_aws_auth" {
-  source = "terraform-aws-modules/eks/aws//modules/aws-auth"
-
   manage_aws_auth_configmap = true
-  eks_cluster_id            = module.eks.cluster_name
 
   aws_auth_users = [
     {
@@ -67,4 +57,9 @@ module "eks_aws_auth" {
       groups   = ["system:masters"]
     }
   ]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
 }
