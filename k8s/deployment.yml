@@ -15,16 +15,16 @@ spec:
         app: flask-todo-app
     spec:
       containers:
-      - name: flask-todo-container
-        image: jayyp2op/flask-todo-app:latest
-        ports:
-        - containerPort: 5000
-        env:
-        - name: BUGSNAG_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: bugsnag-secret
-              key: BUGSNAG_API_KEY
+        - name: flask-todo-container
+          image: jayyp2op/flask-todo-app:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: BUGSNAG_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bugsnag-secret
+                  key: BUGSNAG_API_KEY
 
 ---
 apiVersion: v1
@@ -33,18 +33,20 @@ metadata:
   name: bugsnag-secret
 type: Opaque
 stringData:
-  BUGSNAG_API_KEY: "placeholder" # This will be overridden by GitHub Actions
+  BUGSNAG_API_KEY: "placeholder" # Overwritten by GitHub Actions during CI/CD
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: flask-todo-service
+  labels:
+    app: flask-todo-app
 spec:
+  type: LoadBalancer
   selector:
     app: flask-todo-app
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80
       targetPort: 5000
-  type: LoadBalancer
+      protocol: TCP

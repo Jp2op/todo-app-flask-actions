@@ -70,8 +70,8 @@ jobs:
 
       - name: Deploy to EKS (Application Manifests)
         run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/deployment.yml
+          kubectl apply -f k8s/service.yml
 
       # - name: Install Datadog via Helm # COMMENTED OUT / REMOVE IF DATADOG IS MANAGED BY TERRAFORM HELM_RELEASE
       #   run: |
