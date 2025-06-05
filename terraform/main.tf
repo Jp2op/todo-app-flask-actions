@@ -20,7 +20,7 @@ module "vpc" {
     Name = "eks-vpc"
   }
 }
-
+#EKs module
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
@@ -35,7 +35,7 @@ module "eks" {
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
-  
+
   eks_managed_node_groups = {
     default_node_group = {
       desired_capacity = 2
