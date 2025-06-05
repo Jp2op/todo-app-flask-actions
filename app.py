@@ -2,10 +2,15 @@ import os
 import bugsnag
 from bugsnag.flask import handle_exceptions
 from flask import Flask, render_template, request, redirect
-from ddtrace import patch_all, tracer
 
-# Enable automatic instrumentation
-patch_all()
+# --- Conditional Datadog setup ---
+if os.getenv("DD_TRACE_ENABLED", "true").lower() == "true":
+    from ddtrace import patch_all, tracer
+    patch_all()
+    DATADOG_ENABLED = True
+else:
+    tracer = None
+    DATADOG_ENABLED = False
 
 app = Flask(__name__)
 
@@ -38,8 +43,10 @@ def trigger_error():
 
 @app.route('/datadog')
 def test_datadog_trace():
-    with tracer.trace("custom.test_datadog_trace", service="flask-todo-app"):
-        return "Datadog trace captured."
+    if DATADOG_ENABLED and tracer:
+        with tracer.trace("custom.test_datadog_trace", service="flask-todo-app"):
+            return "Datadog trace captured."
+    return "Datadog tracing is disabled."
 
 @app.route('/health')
 def health():
