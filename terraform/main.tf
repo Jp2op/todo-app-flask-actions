@@ -2,8 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Helm provider configuration to connect to the EKS cluster
-# This was added to fix the "invalid configuration" error for Helm
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -34,28 +32,37 @@ module "vpc" {
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "20.8.4"
+
   cluster_name    = "flask-todo-cluster"
   cluster_version = "1.29"
 
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets # EKS control plane ENIs will be in these subnets
+  subnet_ids = module.vpc.private_subnets
 
   enable_irsa = true
 
-  # --- EKS API Endpoint Access Configuration ---
-  # Ensure the public endpoint is enabled and accessible from GitHub Actions runners
-  cluster_endpoint_public_access  = true
-  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"] # Allows access from any IP.
-  cluster_endpoint_private_access = false
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
+  cluster_endpoint_private_access      = false
 
   eks_managed_node_groups = {
     default = {
-      desired_capacity = 2
-      max_capacity     = 3
-      min_capacity     = 1
-      instance_types   = ["t3.medium"]
+      desired_size   = 2
+      min_size       = 1
+      max_size       = 3
+      instance_types = ["t3.medium"]
     }
   }
+
+  map_users = [
+    {
+      userarn  = "arn:aws:iam::203918885394:user/prefect-worker"
+      username = "github-actions-admin"
+      groups   = ["system:masters"]
+    }
+  ]
+
+  map_roles = []
 }
 
 resource "helm_release" "datadog" {
@@ -69,7 +76,7 @@ resource "helm_release" "datadog" {
 
   set {
     name  = "datadog.apiKey"
-    value = var.datadog_api_key # Ensure this variable is defined (e.g., in variables.tf) and a value is provided
+    value = var.datadog_api_key
   }
 
   set {
