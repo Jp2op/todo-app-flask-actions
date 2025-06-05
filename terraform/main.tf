@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"  # Replace with your desired AWS region
+  region = "us-east-1" # Replace with your desired AWS region
 }
 
 module "vpc" {
@@ -48,22 +48,32 @@ module "eks" {
     }
   }
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-
-module "eks_aws_auth" {
-  source = "terraform-aws-modules/eks/aws//modules/aws-auth"
-
-  cluster_name = module.eks.cluster_name
-
-  aws_auth_users = [
+  # Add your IAM user mappings here
+  map_users = [
     {
       userarn  = "arn:aws:iam::203918885394:user/prefect-worker"
       username = "prefect-worker"
       groups   = ["system:masters"]
     }
   ]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
 }
+
+# The module "eks_aws_auth" should be removed.
+# module "eks_aws_auth" {
+#   source = "terraform-aws-modules/eks/aws//modules/aws-auth"
+# 
+#   cluster_name = module.eks.cluster_name # This was causing the error
+# 
+#   aws_auth_users = [ # This structure should be used with map_users in the main EKS module
+#     {
+#       userarn  = "arn:aws:iam::203918885394:user/prefect-worker"
+#       username = "prefect-worker"
+#       groups   = ["system:masters"]
+#     }
+#   ]
+# }
