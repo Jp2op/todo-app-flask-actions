@@ -2,7 +2,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Add this provider "helm" block:
+# Helm provider configuration to connect to the EKS cluster
+# This was added to fix the "invalid configuration" error for Helm
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -32,14 +33,20 @@ module "vpc" {
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version         = "20.8.4" # Using EKS module version 20.8.4
+  version         = "20.8.4"
   cluster_name    = "flask-todo-cluster"
   cluster_version = "1.29"
 
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  subnet_ids = module.vpc.private_subnets # EKS control plane ENIs will be in these subnets
 
   enable_irsa = true
+
+  # --- EKS API Endpoint Access Configuration ---
+  # Ensure the public endpoint is enabled and accessible from GitHub Actions runners
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"] # Allows access from any IP.
+  cluster_endpoint_private_access = false
 
   eks_managed_node_groups = {
     default = {
@@ -55,14 +62,14 @@ resource "helm_release" "datadog" {
   name       = "datadog"
   repository = "https://helm.datadoghq.com"
   chart      = "datadog"
-  version    = "3.53.1" # Specifying Datadog chart version
+  version    = "3.53.1"
 
   namespace        = "datadog"
   create_namespace = true
 
   set {
     name  = "datadog.apiKey"
-    value = var.datadog_api_key # Make sure var.datadog_api_key is defined and passed
+    value = var.datadog_api_key # Ensure this variable is defined (e.g., in variables.tf) and a value is provided
   }
 
   set {
@@ -86,7 +93,7 @@ resource "helm_release" "datadog" {
   }
 
   set {
-    name  = "agents.containerLogs.enabled" # This is for the Datadog agent configuration
+    name  = "agents.containerLogs.enabled"
     value = "true"
   }
 
@@ -95,13 +102,5 @@ resource "helm_release" "datadog" {
     value = "production"
   }
 
-  depends_on = [module.eks] # This is good, ensures EKS is ready
+  depends_on = [module.eks]
 }
-
-# You should also have a variables.tf file (or define variables here) for var.datadog_api_key
-# Example:
-# variable "datadog_api_key" {
-#   description = "Datadog API Key"
-#   type        = string
-#   sensitive   = true # Recommended for API keys
-# }
