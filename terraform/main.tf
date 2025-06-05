@@ -32,12 +32,10 @@ module "eks" {
 
   enable_irsa = true
 
-  endpoint_access = {
-    public_access = true
-    private_access = true
-    public_access_cidrs = ["0.0.0.0/0"]
-    }
-
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
+  
   eks_managed_node_groups = {
     default_node_group = {
       desired_capacity = 2
