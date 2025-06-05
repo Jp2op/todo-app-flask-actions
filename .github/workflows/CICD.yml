@@ -61,7 +61,7 @@ jobs:
           version: 'latest' # Consider pinning to a specific version
 
       - name: Update kubeconfig for EKS
-        run: aws eks update-kubeconfig --name flask-todo-cluster --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name todo-eks-cluster --region ${{ secrets.AWS_REGION }}
 
       - name: Install Helm # This step is still useful if you have other Helm charts deployed via CLI
         uses: azure/setup-helm@v3
