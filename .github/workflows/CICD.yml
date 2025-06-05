@@ -67,6 +67,12 @@ jobs:
         uses: azure/setup-helm@v3
         with:
           version: 'latest' # Consider pinning to a specific version
+      
+      - name: Create or update Bugsnag secret
+        run: |
+          kubectl create secret generic bugsnag-secret \
+          --from-literal=BUGSNAG_API_KEY=${{ secrets.BUGSNAG_API_KEY }} \
+          --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy to EKS (Application Manifests)
         run: |
