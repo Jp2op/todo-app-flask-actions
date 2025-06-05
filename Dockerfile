@@ -22,7 +22,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # Expose port
-EXPOSE 5000
+EXPOSE 80
 
 # Run the Flask app with Gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "app:app"]
