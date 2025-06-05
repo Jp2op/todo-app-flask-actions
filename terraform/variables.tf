@@ -13,3 +13,9 @@ variable "bugsnag_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "cluster_name" {
+  description = "The name of the EKS cluster"
+  type        = string
+  default     = "todo-eks-cluster"
+}
