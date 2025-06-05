@@ -25,11 +25,11 @@ spec:
             - name: FLASK_ENV
               value: "production"
           livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 5
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
@@ -43,4 +43,4 @@ metadata:
   name: bugsnag-secret
 type: Opaque
 stringData:
-  BUGSNAG_API_KEY: "placeholder"  # Overwritten during CI/CD
+  BUGSNAG_API_KEY: "placeholder"
