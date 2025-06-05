@@ -32,5 +32,12 @@ jobs:
         run: terraform init
 
       - name: Terraform Destroy
-        working-directory: terraform
+        working-directory: terraform # Adjust if your .tf files are in a different directory
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1 # Set to your Terraform's AWS provider region
+          TF_VAR_region: us-east-1 # This is already set and correct
+          TF_VAR_datadog_api_key: ${{ secrets.DATADOG_API_KEY }} # If needed by destroy
+          TF_VAR_bugsnag_api_key: ${{ secrets.BUGSNAG_API_KEY }} # This is the critical one
         run: terraform destroy -auto-approve
