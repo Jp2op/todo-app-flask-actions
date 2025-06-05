@@ -19,12 +19,10 @@ spec:
           image: jayyp2op/flask-todo-app:latest
           ports:
             - containerPort: 5000
+          # Removed valueFrom to allow env to be injected by GitHub Actions
           env:
             - name: BUGSNAG_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: bugsnag-secret
-                  key: BUGSNAG_API_KEY
+              value: ""  # will be overwritten in CI/CD pipeline via `kubectl set env`
 
 ---
 apiVersion: v1
@@ -33,7 +31,7 @@ metadata:
   name: bugsnag-secret
 type: Opaque
 stringData:
-  BUGSNAG_API_KEY: "placeholder" # Overwritten by GitHub Actions during CI/CD
+  BUGSNAG_API_KEY: "placeholder"  # Overwritten by GitHub Actions during CI/CD
 
 ---
 apiVersion: v1
