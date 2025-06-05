@@ -48,7 +48,16 @@ module "eks" {
     }
   }
 
-  manage_aws_auth_configmap = true
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+
+module "eks_aws_auth" {
+  source = "terraform-aws-modules/eks/aws//modules/aws-auth"
+
+  cluster_name = module.eks.cluster_name
 
   aws_auth_users = [
     {
@@ -57,9 +66,4 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
 }
