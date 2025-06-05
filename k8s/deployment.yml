@@ -27,8 +27,6 @@ spec:
                   key: BUGSNAG_API_KEY
             - name: FLASK_ENV
               value: "production"
-            - name: DATADOG_API_KEY
-              value: ""  # optional, will be overridden by CI/CD if used
 
 ---
 apiVersion: v1
