@@ -24,12 +24,12 @@ spec:
               value: ""  # Overwritten during CI/CD
             - name: FLASK_ENV
               value: "production"
-           livenessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 5
+          livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
