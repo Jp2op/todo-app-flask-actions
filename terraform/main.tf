@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"  # Replace with your region
+  region = "us-east-1"  # Replace with your region if different
 }
 
 module "vpc" {
@@ -9,7 +9,7 @@ module "vpc" {
   name = "todo-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-west-2a", "us-west-2b"]
+  azs             = ["us-east-1a", "us-east-1b"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
   public_subnets  = ["10.0.3.0/24", "10.0.4.0/24"]
 
@@ -55,15 +55,12 @@ module "eks" {
 }
 
 module "eks_aws_auth" {
-  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version = "20.0.0"
-
-  depends_on = [module.eks]
+  source = "terraform-aws-modules/eks/aws//modules/aws-auth"
 
   manage_aws_auth_configmap = true
-  cluster_name              = module.eks.cluster_name
+  eks_cluster_id            = module.eks.cluster_name
 
-  users = [
+  aws_auth_users = [
     {
       userarn  = "arn:aws:iam::203918885394:user/prefect-worker"
       username = "prefect-worker"
