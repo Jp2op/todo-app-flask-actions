@@ -42,6 +42,3 @@ def trigger_error():
 def test_datadog_trace():
     with tracer.trace("custom.test_datadog_trace", service="flask-todo-app"):
         return "Datadog trace captured."
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80)
