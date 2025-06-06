@@ -34,6 +34,8 @@ spec:
             value: "production"
           - name: DD_AGENT_HOST
             value: datadog-agent.default.svc.cluster.local
+          - name: DD_TRACE_AGENT_URL
+            value: "http://datadog-agent.default.svc.cluster.local:8126"  
           - name: DD_TRACE_AGENT_PORT
             value: "8126"
     
