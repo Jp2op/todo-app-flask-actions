@@ -25,4 +25,4 @@ COPY . .
 EXPOSE 80
 
 # Run the Flask app with Gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "app:app"]
+CMD ["ddtrace-run","gunicorn", "--bind", "0.0.0.0:80", "app:app"]
