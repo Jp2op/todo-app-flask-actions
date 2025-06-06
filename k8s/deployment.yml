@@ -25,7 +25,15 @@ spec:
           - name: FLASK_ENV
             value: "production"
           - name: DD_TRACE_ENABLED
-            value: "true"  # ✅ Disable Datadog tracing
+            value: "true"
+          - name: DD_ENV
+            value: "production"
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: DD_TRACE_AGENT_PORT
+            value: "8126"
     
           livenessProbe:
             httpGet:
