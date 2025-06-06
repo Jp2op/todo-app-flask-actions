@@ -105,7 +105,8 @@ jobs:
             --namespace default \
             --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
             --set datadog.site="datadoghq.com" \
-            --set datadog.apm.enabled=true \
+            --set datadog.apm.portEnabled=true \
+            --set datadog.apm.socketEnabled=false \
             --set datadog.logs.enabled=true \
             --set datadog.processAgent.enabled=true \
             --set agents.containerLogs.enabled=true \
@@ -114,7 +115,7 @@ jobs:
             --set-string datadog.env[0].value=production \
             --set datadog.namespace=default \
             --create-namespace
-            
+
       - name: Verify Datadog Agent pods
         run: |
           echo "Datadog pods:"
