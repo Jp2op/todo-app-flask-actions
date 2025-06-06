@@ -3,3 +3,4 @@ gunicorn==20.1.0
 bugsnag==4.7.1
 ddtrace==2.21.9
 blinker==1.6.2
+requests==2.31.0
