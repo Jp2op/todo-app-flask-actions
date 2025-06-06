@@ -102,6 +102,7 @@ jobs:
           helm repo add datadog https://helm.datadoghq.com
           helm repo update
           helm upgrade --install datadog-agent datadog/datadog \
+            --namespace default \
             --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
             --set datadog.site="datadoghq.com" \
             --set datadog.apm.enabled=true \
