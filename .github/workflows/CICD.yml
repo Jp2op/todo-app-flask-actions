@@ -114,7 +114,19 @@ jobs:
             --set-string datadog.env[0].value=production \
             --set datadog.namespace=default \
             --create-namespace
-
+            
+      - name: Verify Datadog Agent pods
+        run: |
+          echo "Datadog pods:"
+          kubectl get pods -n default -l app=datadog-agent -o wide || true
+          echo "---"
+          echo "Datadog services:"
+          kubectl get svc -n default | grep datadog || true
+        
+      - name: Check Helm release status
+        run: |
+          helm list --namespace default
+          helm status datadog-agent --namespace default || true
 
       - name: Inject Environment Variables into flask-todo-app Deployment
         run: |
