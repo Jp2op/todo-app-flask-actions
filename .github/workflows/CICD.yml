@@ -101,17 +101,19 @@ jobs:
         run: |
           helm repo add datadog https://helm.datadoghq.com
           helm repo update
-          helm upgrade --install datadog datadog/datadog \
+          helm upgrade --install datadog-agent datadog/datadog \
             --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
-            --set datadog.site='datadoghq.com' \
-            --set datadog.logs.enabled=true \
+            --set datadog.site="datadoghq.com" \
             --set datadog.apm.enabled=true \
+            --set datadog.logs.enabled=true \
             --set datadog.processAgent.enabled=true \
             --set agents.containerLogs.enabled=true \
-            --set datadog.env=production \
-            --set targetSystem=linux \
-            --namespace datadog \
+            --set datadog.kubelet.tlsVerify=false \
+            --set-string datadog.env[0].name=DD_ENV \
+            --set-string datadog.env[0].value=production \
+            --set datadog.namespace=default \
             --create-namespace
+
 
       - name: Inject Environment Variables into flask-todo-app Deployment
         run: |
