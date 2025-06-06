@@ -26,12 +26,14 @@ spec:
             value: "production"
           - name: DD_TRACE_ENABLED
             value: "true"
+          - name: DD_SERVICE
+            value: "flask-todo-app"
+          - name: DD_VERSION
+            value: "1.0.0" 
           - name: DD_ENV
             value: "production"
           - name: DD_AGENT_HOST
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP
+            value: datadog-agent.default.svc.cluster.local
           - name: DD_TRACE_AGENT_PORT
             value: "8126"
     
