@@ -97,21 +97,21 @@ jobs:
           POD=$(kubectl get pods -l app=flask-todo-app -o jsonpath="{.items[0].metadata.name}")
           kubectl logs $POD || echo "No logs available"
 
-      # - name: Install Datadog via Helm # COMMENTED OUT / REMOVE IF DATADOG IS MANAGED BY TERRAFORM HELM_RELEASE
-      #   run: |
-      #     helm repo add datadog https://helm.datadoghq.com
-      #     helm repo update
-      #     helm upgrade --install datadog datadog/datadog \
-      #       --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
-      #       --set datadog.site='datadoghq.com' \
-      #       --set datadog.logs.enabled=true \
-      #       --set datadog.apm.enabled=true \
-      #       --set datadog.processAgent.enabled=true \
-      #       --set agents.containerLogs.enabled=true \
-      #       --set datadog.env=production \
-      #       --set targetSystem=linux \
-      #       --namespace datadog \
-      #       --create-namespace
+      - name: Install Datadog via Helm # COMMENTED OUT / REMOVE IF DATADOG IS MANAGED BY TERRAFORM HELM_RELEASE
+        run: |
+          helm repo add datadog https://helm.datadoghq.com
+          helm repo update
+          helm upgrade --install datadog datadog/datadog \
+            --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
+            --set datadog.site='datadoghq.com' \
+            --set datadog.logs.enabled=true \
+            --set datadog.apm.enabled=true \
+            --set datadog.processAgent.enabled=true \
+            --set agents.containerLogs.enabled=true \
+            --set datadog.env=production \
+            --set targetSystem=linux \
+            --namespace datadog \
+            --create-namespace
 
       - name: Inject Environment Variables into flask-todo-app Deployment
         run: |

@@ -20,17 +20,12 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: BUGSNAG_API_KEY
-              value: ""  # Overwritten during CI/CD
-            - name: FLASK_ENV
-              value: "production"
-          env:
           - name: BUGSNAG_API_KEY
             value: ""  # Overwritten during CI/CD
           - name: FLASK_ENV
             value: "production"
           - name: DD_TRACE_ENABLED
-            value: "false"  # ✅ Disable Datadog tracing
+            value: "true"  # ✅ Disable Datadog tracing
     
           livenessProbe:
             httpGet:
